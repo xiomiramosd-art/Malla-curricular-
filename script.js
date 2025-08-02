@@ -1,183 +1,207 @@
-// Espera a que todo el contenido del HTML se cargue antes de ejecutar el script
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
 
-    // --- 1. DEFINICIÓN DE DATOS DE LA MALLA ---
-    // Se definen todos los ramos con un ID único, nombre, semestre y sus requisitos.
-    // El ID es importante para las dependencias y el guardado.
+    // --- ESTRUCTURA DE DATOS DE LOS RAMOS ---
+    // Cada objeto tiene: id (único), nombre, semestre y un array de requisitos (id's de otros ramos).
+    // El id es crucial para la lógica de requisitos.
     const ramos = [
         // Semestre 1
-        { id: 'gestion-riesgos-biologicos', nombre: 'Gestión de riesgos biológicos', semestre: 1, requisitos: [] },
-        { id: 'gestion-riesgos-seguridad-laboral', nombre: 'Gestión de riesgos en seguridad laboral', semestre: 1, requisitos: [] },
-        { id: 'ofimatica-prevencion', nombre: 'Ofimática para la prevención', semestre: 1, requisitos: [] },
-        { id: 'procesos-productivos', nombre: 'Procesos productivos', semestre: 1, requisitos: [] },
-        { id: 'habilidades-basicas-comunicacion', nombre: 'Habilidades básicas de comunicación', semestre: 1, requisitos: [] },
-        { id: 'nivelacion-matematica', nombre: 'Nivelación matemática', semestre: 1, requisitos: [] },
-        
+        { id: 'grb', nombre: 'Gestión de riesgos biológicos', semestre: 1, requisitos: [] },
+        { id: 'grsl', nombre: 'Gestión de riesgos en seguridad laboral', semestre: 1, requisitos: [] },
+        { id: 'ofi', nombre: 'Ofimática para la prevención', semestre: 1, requisitos: [] },
+        { id: 'pp', nombre: 'Procesos productivos', semestre: 1, requisitos: [] },
+        { id: 'hbc', nombre: 'Habilidades básicas de comunicación', semestre: 1, requisitos: [] },
+        { id: 'nm', nombre: 'Nivelación matemática', semestre: 1, requisitos: [] },
+
         // Semestre 2
-        { id: 'gestion-riesgos-fisicos', nombre: 'Gestión de riesgos físicos', semestre: 2, requisitos: ['gestion-riesgos-biologicos'] },
-        { id: 'gestion-riesgos-quimicos', nombre: 'Gestión de riesgos químicos', semestre: 2, requisitos: ['gestion-riesgos-biologicos'] },
-        { id: 'gestion-riesgos-ergonomicos', nombre: 'Gestión de riesgos ergonómicos', semestre: 2, requisitos: [] },
-        { id: 'habilidades-comunicacion-efectiva', nombre: 'Habilidades de comunicación efectiva', semestre: 2, requisitos: ['habilidades-basicas-comunicacion'] },
-        { id: 'herramientas-analisis-gestion', nombre: 'Herramientas de análisis para la gestión', semestre: 2, requisitos: [] },
-        { id: 'fundamentos-antropologia', nombre: 'Fundamentos de antropología', semestre: 2, requisitos: [] },
+        { id: 'grf', nombre: 'Gestión de riesgos físicos', semestre: 2, requisitos: ['grb'] },
+        { id: 'grq', nombre: 'Gestión de riesgos químicos', semestre: 2, requisitos: ['grb'] },
+        { id: 'gre', nombre: 'Gestión de riesgos ergonómicos', semestre: 2, requisitos: [] },
+        { id: 'hce', nombre: 'Habilidades de comunicación efectiva', semestre: 2, requisitos: ['hbc'] },
+        { id: 'hag', nombre: 'Herramientas de análisis para la gestión', semestre: 2, requisitos: [] },
+        { id: 'fa', nombre: 'Fundamentos de antropología', semestre: 2, requisitos: [] },
 
         // Semestre 3
-        { id: 'planes-programas-sso', nombre: 'Planes y programas en SSO', semestre: 3, requisitos: [] },
-        { id: 'analisis-reduccion-accidentabilidad', nombre: 'Análisis y reducción de accidentabilidad', semestre: 3, requisitos: [] },
-        { id: 'materiales-peligrosos-riesgo-incendios', nombre: 'Materiales peligrosos y riesgo de incendios', semestre: 3, requisitos: [] },
-        { id: 'gestion-riesgos-psicosociales', nombre: 'Gestión de riesgos psicosociales', semestre: 3, requisitos: [] },
-        { id: 'curso-formacion-cristiana', nombre: 'Curso de formación cristiana', semestre: 3, requisitos: [] },
-        { id: 'ingles-basico-1', nombre: 'Ingles básico 1', semestre: 3, requisitos: [] },
+        { id: 'ppsso', nombre: 'Planes y programas en SSO', semestre: 3, requisitos: [] },
+        { id: 'ara', nombre: 'Análisis y reducción de accidentabilidad', semestre: 3, requisitos: [] },
+        { id: 'mpri', nombre: 'Materiales peligrosos y riesgo de incendios', semestre: 3, requisitos: [] },
+        { id: 'grp', nombre: 'Gestión de riesgos psicosociales', semestre: 3, requisitos: [] },
+        { id: 'cfc', nombre: 'Curso de formación cristiana', semestre: 3, requisitos: [] },
+        { id: 'ib1', nombre: 'Ingles básico 1', semestre: 3, requisitos: [] },
 
         // Semestre 4
-        { id: 'sistemas-gestion-sso', nombre: 'Sistemas de gestión en SSO', semestre: 4, requisitos: [] },
-        { id: 'capacitacion-sso', nombre: 'Capacitación en SSO', semestre: 4, requisitos: [] },
-        { id: 'control-incidencias', nombre: 'Control de incidencias', semestre: 4, requisitos: ['materiales-peligrosos-riesgo-incendios'] },
-        { id: 'supervision-programas-sso', nombre: 'Supervisión de programas en SSO', semestre: 4, requisitos: [] },
-        { id: 'mentalidad-emprendedora', nombre: 'Mentalidad emprendedora', semestre: 4, requisitos: [] },
-        { id: 'ingles-basico-2', nombre: 'Ingles básico 2', semestre: 4, requisitos: ['ingles-basico-1'] },
-        { id: 'etica-trabajo', nombre: 'Ética para el trabajo', semestre: 4, requisitos: ['fundamentos-antropologia'] },
+        { id: 'sgsso', nombre: 'Sistemas de gestión en SSO', semestre: 4, requisitos: [] },
+        { id: 'csso', nombre: 'Capacitación en SSO', semestre: 4, requisitos: [] },
+        { id: 'ci', nombre: 'Control de incidencias', semestre: 4, requisitos: ['mpri'] },
+        { id: 'spsso', nombre: 'Supervisión de programas en SSO', semestre: 4, requisitos: [] },
+        { id: 'me', nombre: 'Mentalidad emprendedora', semestre: 4, requisitos: [] },
+        { id: 'ib2', nombre: 'Ingles básico 2', semestre: 4, requisitos: ['ib1'] },
+        { id: 'et', nombre: 'Ética para el trabajo', semestre: 4, requisitos: ['fa'] },
 
         // Semestre 5
-        { id: 'sistemas-gestion-medio-ambiente', nombre: 'Sistemas de gestión en medio ambiente', semestre: 5, requisitos: ['sistemas-gestion-sso'] },
-        { id: 'sistemas-gestion-calidad', nombre: 'Sistemas de gestión de calidad', semestre: 5, requisitos: ['sistemas-gestion-sso'] },
-        { id: 'contaminantes-manejo-residuos', nombre: 'Contaminantes y manejo de residuos', semestre: 5, requisitos: [] },
-        { id: 'planes-formacion-sso', nombre: 'Planes de formación en SSO', semestre: 5, requisitos: [] },
-        { id: 'practica-laboral', nombre: 'Practica laboral', semestre: 5, requisitos: [] },
-        { id: 'estadistica-inferencial', nombre: 'Estadística inferencial', semestre: 5, requisitos: ['herramientas-analisis-gestion'] },
-        { id: 'ingles-elemental-1', nombre: 'Ingles elemental 1', semestre: 5, requisitos: ['ingles-basico-2'] },
-        { id: 'formacion-complementaria-5', nombre: 'Formación complementaria', semestre: 5, requisitos: [] },
+        { id: 'sgma', nombre: 'Sistemas de gestión en medio ambiente', semestre: 5, requisitos: ['sgsso'] },
+        { id: 'sgc', nombre: 'Sistemas de gestión de calidad', semestre: 5, requisitos: ['sgsso'] },
+        { id: 'cmr', nombre: 'Contaminantes y manejo de residuos', semestre: 5, requisitos: [] },
+        { id: 'pfsso', nombre: 'Planes de formación en SSO', semestre: 5, requisitos: [] },
+        { id: 'pl', nombre: 'Practica laboral', semestre: 5, requisitos: [] },
+        { id: 'ei', nombre: 'Estadística inferencial', semestre: 5, requisitos: ['hag'] },
+        { id: 'ie1', nombre: 'Ingles elemental 1', semestre: 5, requisitos: ['ib2'] },
+        { id: 'fc1', nombre: 'Formación complementaria', semestre: 5, requisitos: [] },
 
         // Semestre 6
-        { id: 'sistemas-gestion-integrados', nombre: 'Sistemas de gestión integrados', semestre: 6, requisitos: ['sistemas-gestion-medio-ambiente', 'sistemas-gestion-calidad'] },
-        { id: 'auditoria-sistemas-gestion', nombre: 'Auditoría en sistemas de gestión', semestre: 6, requisitos: ['sistemas-gestion-calidad'] },
-        { id: 'integracion-sso-rrhh', nombre: 'Integración de SSO y RRHH', semestre: 6, requisitos: [] },
-        { id: 'cultura-organizacional-prevencion', nombre: 'Cultura organizacional y prevención', semestre: 6, requisitos: [] },
-        { id: 'finanzas-evaluacion-proyectos', nombre: 'Finanzas para la evaluación de proyectos', semestre: 6, requisitos: [] },
-        { id: 'gestion-equipos-trabajo', nombre: 'Gestión de equipos de trabajo', semestre: 6, requisitos: [] },
-        { id: 'ingles-elemental-2', nombre: 'Ingles elemental 2', semestre: 6, requisitos: ['ingles-elemental-1'] },
-        { id: 'formacion-complementaria-6', nombre: 'Formación complementaria', semestre: 6, requisitos: [] },
+        { id: 'sgi', nombre: 'Sistemas de gestión integrados', semestre: 6, requisitos: ['sgma', 'sgc'] },
+        { id: 'asg', nombre: 'Auditoría en sistemas de gestión', semestre: 6, requisitos: ['sgc'] },
+        { id: 'isrh', nombre: 'Integración de SSO y RRHH', semestre: 6, requisitos: [] },
+        { id: 'cop', nombre: 'Cultura organizacional y prevención', semestre: 6, requisitos: [] },
+        { id: 'fep', nombre: 'Finanzas para la evaluación de proyectos', semestre: 6, requisitos: [] },
+        { id: 'get', nombre: 'Gestión de equipos de trabajo', semestre: 6, requisitos: [] },
+        { id: 'ie2', nombre: 'Ingles elemental 2', semestre: 6, requisitos: ['ie1'] },
+        { id: 'fc2', nombre: 'Formación complementaria', semestre: 6, requisitos: [] },
 
         // Semestre 7
-        { id: 'optimizacion-procesos-sso', nombre: 'Optimización de procesos y SSO', semestre: 7, requisitos: ['finanzas-evaluacion-proyectos'] },
-        { id: 'continuidad-operacional-desastres', nombre: 'Continuidad operacional ante desastres', semestre: 7, requisitos: [] },
-        { id: 'evaluacion-gestion-proyectos-sso', nombre: 'Evaluación y gestión de proyectos en SSO', semestre: 7, requisitos: ['finanzas-evaluacion-proyectos'] },
-        { id: 'gestion-financiera-administrativa', nombre: 'Gestión financiera y administrativa', semestre: 7, requisitos: [] },
-        { id: 'innovacion-operacional-procesos', nombre: 'Innovación operacional y de procesos', semestre: 7, requisitos: ['mentalidad-emprendedora'] },
-        { id: 'etica-profesional', nombre: 'Ética profesional', semestre: 7, requisitos: ['etica-trabajo'] },
-
+        { id: 'opsso', nombre: 'Optimización de procesos y SSO', semestre: 7, requisitos: ['fep'] },
+        { id: 'coad', nombre: 'Continuidad operacional ante desastres', semestre: 7, requisitos: [] },
+        { id: 'egpsso', nombre: 'Evaluación y gestión de proyectos en SSO', semestre: 7, requisitos: ['fep'] },
+        { id: 'gfa', nombre: 'Gestión financiera y administrativa', semestre: 7, requisitos: [] },
+        { id: 'iop', nombre: 'Innovación operacional y de procesos', semestre: 7, requisitos: ['me'] },
+        { id: 'ep', nombre: 'Ética profesional', semestre: 7, requisitos: ['et'] },
+        
         // Semestre 8
-        { id: 'portafolio-titulo', nombre: 'Portafolio de titulo', semestre: 8, requisitos: [] },
-        { id: 'practica-profesional', nombre: 'Práctica profesional', semestre: 8, requisitos: [] },
+        { id: 'pt', nombre: 'Portafolio de titulo', semestre: 8, requisitos: [] },
+        { id: 'pprof', nombre: 'Práctica profesional', semestre: 8, requisitos: [] }
     ];
-    
-    const container = document.getElementById('malla-curricular-container');
-    const totalSemestres = 8;
-    let ramosAprobados = new Set(JSON.parse(localStorage.getItem('ramosAprobados')) || []);
 
-    // --- 2. FUNCIÓN PARA GENERAR LA ESTRUCTURA HTML DE LA MALLA ---
-    const generarMalla = () => {
-        for (let i = 1; i <= totalSemestres; i++) {
-            // Crear una columna para cada semestre
-            const semestreDiv = document.createElement('div');
-            semestreDiv.className = 'semestre';
-            semestreDiv.innerHTML = `<h2>Semestre ${i}</h2>`;
+    const contenedorMalla = document.getElementById('malla-curricular');
+    let aprobados = []; // Array que contendrá los IDs de los ramos aprobados
+
+    // --- FUNCIÓN PARA INICIALIZAR LA MALLA ---
+    function inicializarMalla() {
+        // Cargar los ramos aprobados desde localStorage
+        const guardados = localStorage.getItem('ramosAprobados');
+        if (guardados) {
+            aprobados = JSON.parse(guardados);
+        }
+
+        // Determinar el número máximo de semestres
+        const maxSemestre = Math.max(...ramos.map(r => r.semestre));
+
+        // Crear una columna por cada semestre
+        for (let i = 1; i <= maxSemestre; i++) {
+            const columna = document.createElement('div');
+            columna.classList.add('semestre-columna');
+            columna.innerHTML = `<h2>Semestre ${i}</h2>`;
             
-            // Filtrar los ramos que pertenecen al semestre actual
-            const ramosDelSemestre = ramos.filter(ramo => ramo.semestre === i);
-            
-            // Crear un elemento div para cada ramo
-            ramosDelSemestre.forEach(ramo => {
+            // Filtrar y añadir los ramos correspondientes a este semestre
+            ramos.filter(ramo => ramo.semestre === i).forEach(ramo => {
                 const ramoDiv = document.createElement('div');
-                ramoDiv.className = 'ramo';
-                ramoDiv.id = ramo.id;
+                ramoDiv.classList.add('ramo');
+                ramoDiv.dataset.id = ramo.id; // Usamos data-id para identificar el ramo
                 ramoDiv.textContent = ramo.nombre;
-                // Guardar los requisitos en un atributo data-* para fácil acceso
-                ramoDiv.dataset.requisitos = JSON.stringify(ramo.requisitos);
-                semestreDiv.appendChild(ramoDiv);
-            });
-            
-            container.appendChild(semestreDiv);
-        }
-    };
-
-    // --- 3. FUNCIONES PARA MANEJAR EL ESTADO (APROBADO/BLOQUEADO) ---
-    
-    // Actualiza la clase 'aprobado' en los elementos visuales según el set de ramosAprobados
-    const actualizarRamosAprobados = () => {
-        document.querySelectorAll('.ramo').forEach(ramoDiv => {
-            if (ramosAprobados.has(ramoDiv.id)) {
-                ramoDiv.classList.add('aprobado');
-            } else {
-                ramoDiv.classList.remove('aprobado');
-            }
-        });
-    };
-
-    // Revisa los requisitos y añade o quita la clase 'bloqueado'
-    const actualizarEstadoBloqueo = () => {
-        document.querySelectorAll('.ramo').forEach(ramoDiv => {
-            if (ramoDiv.classList.contains('aprobado')) {
-                ramoDiv.classList.remove('bloqueado');
-                return;
-            }
-
-            const requisitos = JSON.parse(ramoDiv.dataset.requisitos);
-            const requisitosFaltantes = requisitos.filter(req => !ramosAprobados.has(req));
-
-            if (requisitosFaltantes.length > 0) {
-                ramoDiv.classList.add('bloqueado');
-            } else {
-                ramoDiv.classList.remove('bloqueado');
-            }
-        });
-    };
-    
-    // Guarda el set de ramos aprobados en el localStorage del navegador
-    const guardarProgreso = () => {
-        localStorage.setItem('ramosAprobados', JSON.stringify(Array.from(ramosAprobados)));
-    };
-
-    // --- 4. MANEJADOR DE EVENTOS ---
-
-    // Función que se ejecuta al hacer clic en un ramo
-    const manejarClickEnRamo = (e) => {
-        // Solo reaccionar si se hizo clic en un elemento con la clase 'ramo'
-        if (!e.target.classList.contains('ramo')) return;
-
-        const ramoId = e.target.id;
-        const ramoDiv = e.target;
-        
-        // Si el ramo ya está aprobado, permitir des-aprobarlo
-        if (ramoDiv.classList.contains('aprobado')) {
-            ramosAprobados.delete(ramoId);
-        } else {
-            // Si está bloqueado, mostrar alerta y no hacer nada más
-            if (ramoDiv.classList.contains('bloqueado')) {
-                const requisitos = JSON.parse(ramoDiv.dataset.requisitos);
-                const faltantes = requisitos
-                    .filter(reqId => !ramosAprobados.has(reqId))
-                    .map(reqId => ramos.find(r => r.id === reqId).nombre); // Busca el nombre completo
                 
-                alert(`🔴 Ramo bloqueado. \nDebes aprobar primero:\n\n- ${faltantes.join('\n- ')}`);
-                return;
-            }
-            // Si no está bloqueado ni aprobado, lo aprueba
-            ramosAprobados.add(ramoId);
+                // Añadir evento de clic
+                ramoDiv.addEventListener('click', () => onRamoClick(ramo.id));
+                
+                columna.appendChild(ramoDiv);
+            });
+            contenedorMalla.appendChild(columna);
+        }
+
+        actualizarVisualizacionRamos();
+    }
+
+    // --- FUNCIÓN EJECUTADA AL HACER CLIC EN UN RAMO ---
+    function onRamoClick(idRamo) {
+        const ramo = ramos.find(r => r.id === idRamo);
+        if (!ramo) return;
+
+        const requisitosFaltantes = verificarRequisitos(idRamo);
+
+        if (aprobados.includes(idRamo)) {
+            // Si el ramo ya está aprobado, se desaprueba
+            desaprobarRamo(idRamo);
+        } else if (requisitosFaltantes.length === 0) {
+            // Si no está aprobado y no le faltan requisitos, se aprueba
+            aprobarRamo(idRamo);
+        } else {
+            // Si está bloqueado, mostrar notificación
+            const nombresRamosFaltantes = requisitosFaltantes.map(id => ramos.find(r => r.id === id).nombre);
+            mostrarNotificacion(`Requisitos pendientes: ${nombresRamosFaltantes.join(', ')}`);
+        }
+    }
+    
+    // --- LÓGICA DE APROBACIÓN Y REQUISITOS ---
+
+    function aprobarRamo(idRamo) {
+        if (!aprobados.includes(idRamo)) {
+            aprobados.push(idRamo);
+            guardarProgreso();
+            actualizarVisualizacionRamos();
+        }
+    }
+
+    function desaprobarRamo(idRamo) {
+        // Lógica para desaprobar un ramo y todos los que dependen de él
+        let aDesaprobar = [idRamo];
+        let i = 0;
+        while(i < aDesaprobar.length){
+            const idActual = aDesaprobar[i];
+            // Encontrar todos los ramos que tienen el ramo actual como requisito
+            const dependientes = ramos.filter(r => r.requisitos.includes(idActual));
+            dependientes.forEach(dep => {
+                if(aprobados.includes(dep.id) && !aDesaprobar.includes(dep.id)){
+                    aDesaprobar.push(dep.id);
+                }
+            });
+            i++;
         }
         
-        // Actualizar el estado visual y guardar el progreso
-        actualizarRamosAprobados();
-        actualizarEstadoBloqueo();
+        // Quitar todos los ramos identificados de la lista de aprobados
+        aprobados = aprobados.filter(id => !aDesaprobar.includes(id));
         guardarProgreso();
-    };
+        actualizarVisualizacionRamos();
+    }
 
-    // --- 5. INICIALIZACIÓN DE LA APLICACIÓN ---
-    
-    generarMalla(); // Dibuja la malla en la página
-    actualizarRamosAprobados(); // Pinta los ramos guardados como aprobados
-    actualizarEstadoBloqueo(); // Bloquea los ramos cuyos requisitos no están cumplidos
-    
-    // Añadir un único listener de eventos al contenedor principal (más eficiente)
-    container.addEventListener('click', manejarClickEnRamo);
+    function verificarRequisitos(idRamo) {
+        const ramo = ramos.find(r => r.id === idRamo);
+        if (!ramo || ramo.requisitos.length === 0) {
+            return []; // No tiene requisitos
+        }
+        // Devuelve un array con los IDs de los requisitos que NO están en la lista de aprobados
+        return ramo.requisitos.filter(req => !aprobados.includes(req));
+    }
+
+    // --- ACTUALIZACIÓN VISUAL ---
+    function actualizarVisualizacionRamos() {
+        document.querySelectorAll('.ramo').forEach(ramoDiv => {
+            const id = ramoDiv.dataset.id;
+            const requisitosFaltantes = verificarRequisitos(id);
+
+            ramoDiv.classList.remove('aprobado', 'bloqueado');
+
+            if (aprobados.includes(id)) {
+                ramoDiv.classList.add('aprobado');
+            } else if (requisitosFaltantes.length > 0) {
+                ramoDiv.classList.add('bloqueado');
+            }
+        });
+    }
+
+    // --- PERSISTENCIA DE DATOS (localStorage) ---
+    function guardarProgreso() {
+        localStorage.setItem('ramosAprobados', JSON.stringify(aprobados));
+    }
+
+    // --- NOTIFICACIONES ---
+    function mostrarNotificacion(mensaje) {
+        const notificacionDiv = document.getElementById('notificacion');
+        notificacionDiv.textContent = mensaje;
+        notificacionDiv.classList.add('mostrar');
+
+        // Ocultar la notificación después de 3 segundos
+        setTimeout(() => {
+            notificacionDiv.classList.remove('mostrar');
+        }, 3000);
+    }
+
+    // --- INICIAR LA APLICACIÓN ---
+    inicializarMalla();
 });
