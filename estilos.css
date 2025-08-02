@@ -1,1 +1,113 @@
+/* --- Variables de Color y Estilos Globales --- */
+:root {
+    --color-fondo: #2c2a4a; /* Morado oscuro para el fondo */
+    --color-ramo: #4f4c7a;   /* Morado intermedio para los ramos */
+    --color-ramo-aprobado: #f875aa; /* Rosado para ramos aprobados */
+    --color-ramo-bloqueado: #3e3c61; /* Morado más oscuro para ramos bloqueados */
+    --color-texto: #e0e0e0; /* Texto claro para contraste */
+    --color-texto-aprobado: #2c2a4a; /* Texto oscuro para ramos aprobados */
+    --color-sombra: rgba(0, 0, 0, 0.2);
+    --fuente-principal: 'Poppins', sans-serif;
+}
 
+body {
+    font-family: var(--fuente-principal);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+h1, h2 {
+    font-weight: 700;
+}
+
+header, footer {
+    max-width: 1200px;
+    margin: 0 auto 20px auto;
+}
+
+/* --- Contenedor Principal de la Malla --- */
+.malla-container {
+    display: flex;
+    flex-direction: row; /* Organiza los semestres en columnas */
+    gap: 15px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    overflow-x: auto; /* Permite scroll horizontal si no caben todos los semestres */
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+/* --- Columna de cada Semestre --- */
+.semestre {
+    flex: 1; /* Cada semestre ocupa el mismo espacio */
+    min-width: 200px; /* Ancho mínimo para cada columna */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre los ramos */
+}
+
+.semestre h2 {
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--color-ramo);
+    font-size: 1.2em;
+}
+
+/* --- Estilo de cada Ramo --- */
+.ramo {
+    background-color: var(--color-ramo);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 8px var(--color-sombra);
+    text-align: center;
+}
+
+.ramo:hover {
+    transform: translateY(-5px); /* Efecto de levantar al pasar el mouse */
+}
+
+/* --- Estilos para Ramos Aprobados --- */
+.ramo.aprobado {
+    background-color: var(--color-ramo-aprobado);
+    color: var(--color-texto-aprobado);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    opacity: 0.9;
+}
+
+/* --- Estilos para Ramos Bloqueados --- */
+.ramo.bloqueado {
+    background-color: var(--color-ramo-bloqueado);
+    cursor: not-allowed; /* Cambia el cursor para indicar que no es clickable */
+    opacity: 0.7;
+}
+
+.ramo.bloqueado:hover {
+    transform: none; /* No hay efecto de levantar si está bloqueado */
+}
+
+/* --- Diseño Responsivo para Móviles --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .malla-container {
+        flex-direction: column; /* Apila los semestres verticalmente */
+        overflow-x: hidden; /* Oculta el scroll horizontal */
+        padding: 10px;
+    }
+
+    .semestre {
+        min-width: unset; /* Resetea el ancho mínimo */
+        width: 100%;
+    }
+}
